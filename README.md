@@ -44,3 +44,18 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## for nginx deployment 
+deployment folder created at /home/iauro/nginx-build-test/react-redux-example;
+<app>.conf file created with content
+sudo nginx -t 
+sudo nginx service reload
+view latest app on localhost:<port mention in app.conf file>
+
+
+
+## for Docker deployment
+created Dockerfile in app with all the steps to perform
+execute Dockerfile using - docker build -t react-redux-example .
+check content of docker image docker run -it react-redux-example sh
+port forward of running docker application - docker run -p 3000:5002 <doc_image_name: react-redux-example>

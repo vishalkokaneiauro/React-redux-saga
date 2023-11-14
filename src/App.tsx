@@ -7,6 +7,9 @@ function App() {
     <Provider store={store}>
       <div>React-Redux-Saga</div>
       <HomePage />
+      <div>after home page</div>
+      <div>after home page</div>
+      <div>after home page</div>
     </Provider>
   );
 }

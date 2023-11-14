@@ -1,44 +1,38 @@
 pipeline {
-  agent any
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  environment {
-    HEROKU_API_KEY = credentials('heroku-api-key')
-    IMAGE_NAME = 'darinpope/jenkins-example-react'
-    IMAGE_TAG = 'latest'
-    APP_NAME = 'jenkins-example-react'
-  }
-  stages {
-    stage('Build') {
-      steps {
-        sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
-      }
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout your React app from version control (e.g., Git)
+                git 'https://github.com/yourusername/your-react-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Install Node.js and dependencies
+                sh 'npm install'
+
+                // Build the React app
+                sh 'npm run build'
+            }
+        }
+
+        stage('Deploy to Nginx') {
+            steps {
+                // Copy the built React app to the Nginx web root
+                sh 'sudo cp -r build/* /var/www/html/'
+
+                // Restart Nginx to apply changes
+                sh 'sudo systemctl restart nginx'
+            }
+        }
     }
-    stage('Login') {
-      steps {
-        sh 'echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com'
-      }
+
+    post {
+        always {
+            // Cleanup steps if needed
+        }
     }
-    stage('Push to Heroku registry') {
-      steps {
-        sh '''
-          docker tag $IMAGE_NAME:$IMAGE_TAG registry.heroku.com/$APP_NAME/web
-          docker push registry.heroku.com/$APP_NAME/web
-        '''
-      }
-    }
-    stage('Release the image') {
-      steps {
-        sh '''
-          heroku container:release web --app=$APP_NAME
-        '''
-      }
-    }
-  }
-  post {
-    always {
-      sh 'docker logout'
-    }
-  }
 }
